@@ -401,12 +401,7 @@ This project is licensed under the MIT License.
 - DevOps Team
 - Development Team
 
-## 📞 Support
 
-For issues or questions:
-- Create an issue in GitHub
-- Contact: security-team@example.com
-- Slack: #secure-spring-app
 
 ## 🎯 Next Steps
 
