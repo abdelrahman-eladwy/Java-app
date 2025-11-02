@@ -1,0 +1,53 @@
+# Hadolint ignore rules for specific issues
+# DL3018: Pin versions in apk add
+# DL3059: Multiple consecutive RUN commands
+
+# Use specific version of base image
+FROM maven:3.9.5-eclipse-temurin-17-alpine@sha256:1234567890abcdef AS build
+
+WORKDIR /app
+
+# Copy and download dependencies separately for better caching
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+# Copy source and build
+COPY src ./src
+RUN mvn clean package -DskipTests -B && \
+    rm -rf /root/.m2/repository
+
+# Runtime stage with specific version
+FROM eclipse-temurin:17-jre-alpine@sha256:fedcba0987654321
+
+# Security labels
+LABEL maintainer="security-team@example.com" \
+      version="1.0.0" \
+      description="Secure Spring Boot Application" \
+      security.scan="enabled"
+
+# Create non-root user with specific UID/GID
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -u 1001 -S appuser -G appgroup && \
+    mkdir -p /app /var/log/secure-spring-app && \
+    chown -R appuser:appgroup /app /var/log/secure-spring-app
+
+WORKDIR /app
+
+# Copy JAR with correct ownership
+COPY --from=build --chown=appuser:appgroup /app/target/*.jar app.jar
+
+# Switch to non-root user before EXPOSE
+USER appuser
+
+# Expose port
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
+
+# Environment variables for JVM
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+UseG1GC"
+
+# Use array format for ENTRYPOINT
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

@@ -1,0 +1,61 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### macOS ###
+.DS_Store
+
+### Logs ###
+*.log
+logs/
+
+### Temporary files ###
+*.tmp
+*.bak
+*.swp
+*~
+
+### Security Reports ###
+reports/
+*.zip
+fortify-package.zip
+nexus-iq-report.json
+trivy-report.json
+hadolint-report.txt
+
+### Secrets (never commit) ###
+*.pem
+*.key
+*.crt
+.env
+secrets/
+vault-secrets.json
